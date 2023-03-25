@@ -42,16 +42,9 @@ export const PiggybankWindowView = Window2View.extend({
 			width={width}
 			height={height}
 		>
-			<Lay name={'flying all sides'} assert={'{"t": {"left":300, "bottom":300}, "t2": {"left":300, "bottom":300}}, "r": {"left":300, "bottom":300}, "r2": {"left":300, "bottom":300}, "b": {"left":300, "bottom":300}, "b2": {"left":300, "bottom":300}, "l": {"left":300, "bottom":300}, "l2": {"left":300, "bottom":300}}'}>
-				<Box name={'Dog'} drawBox={true} top={-400} width={500} height={500}>
-					<Box drawBox={true} name={'t'} width={'20%'} height={'20%'} left={'50%'} top={'12%'}></Box>
-					<Box drawBox={true} name={'r'} width={'20%'} height={'20%'} right={'12%'} top={'50%'}></Box>
-					<Box drawBox={true} name={'b'} width={'20%'} height={'20%'} right={'50%'} bottom={'12%'}></Box>
-					<Box drawBox={true} name={'l'} width={'20%'} height={'20%'} left={'12%'} top={'50%'}></Box>
-					<Box drawBox={true} name={'t2'} width={'10%'} height={'10%'} left={'50%'} top={'12%'} anchorPoint={cc.p(0.5,0.5+1)}></Box>
-					<Box drawBox={true} name={'r2'} width={'10%'} height={'10%'} right={'12%'} top={'50%'} anchorPoint={cc.p(0.5+1,0.5)}></Box>
-					<Box drawBox={true} name={'b2'} width={'10%'} height={'10%'} right={'50%'} bottom={'12%'} anchorPoint={cc.p(0.5,0.5-1)}></Box>
-					<Box drawBox={true} name={'l2'} width={'10%'} height={'10%'} left={'12%'} top={'50%'} anchorPoint={cc.p(0.5-1,0.5)}></Box>
+			<Lay bottom={500} name={'flying all sides'} assert={'{"t":{"width":110, "height":110, "left":-10, "bottom":-10}}'}>
+				<Box drawBox={true} name={'Dog'} width={500} height={500}>
+					<Box drawBox={true} name={'t'} width={'20%'} height={'20%'} left={'12%'} bottom={'5%'}></Box>
 				</Box>
 			</Lay>
 
@@ -77,22 +70,28 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay name={'flying'} assert={'{"Eagle": {"left":10, "bottom":10}, "Sparrow": {"left":480, "bottom":10}, "Falcon": {"left":480, "bottom":480}, "Seagull": {"left":10, "bottom":480}}'}>
-				<Box name={'Dog'} drawBox={true} width={500} height={500}>
-					<Box drawBox={true} name={'Eagle'} width={10} height={10} left={'10'} bottom={'10'}></Box>
-					<Box drawBox={true} name={'Sparrow'} width={10} height={10} right={'10'} bottom={'10'}></Box>
-					<Box drawBox={true} name={'Falcon'} width={10} height={10} right={'10'} top={'10'}></Box>
-					<Box drawBox={true} name={'Seagull'} width={10} height={10} left={'10'} top={'10'}></Box>
-				</Box>
-			</Lay>
-
-			<Lay name={'flying percents'} assert={'{"Pinguin": {"width":300, "height":300, "left":100, "bottom":100}}'}>
-				<Box name={'Dog'} drawBox={true} width={500} height={500}>
-					<Box drawBox={true} name={'Pinguin'} width={'60%'} height={'60%'} left={'20%'} bottom={'20%'}></Box>
+			<Lay name={'flying all sides'} assert={'{"t": {"left":250, "bottom":340}, "t2": {"left":250, "bottom":340}, "r": {"left":440, "bottom":150}, "r2": {"left":440, "bottom":150}, "b": {"left":250, "bottom":-40}, "b2": {"left":250, "bottom":-40}, "l": {"left":60, "bottom":150}, "l2": {"left":60, "bottom":150}}'}>
+				<Box name={'Dog'} drawBox={true} top={-400} width={500} height={500}>
+					<Box drawBox={true} name={'t'} width={'20%'} height={'20%'} left={'50%'} top={'12%'}></Box>
+					<Box drawBox={true} name={'r'} width={'20%'} height={'20%'} right={'12%'} top={'50%'}></Box>
+					<Box drawBox={true} name={'b'} width={'20%'} height={'20%'} right={'50%'} bottom={'12%'}></Box>
+					<Box drawBox={true} name={'l'} width={'20%'} height={'20%'} left={'12%'} top={'50%'}></Box>
+					<Box drawBox={true} name={'t2'} width={'10%'} height={'10%'} left={'50%'} top={'12%'} anchorPoint={cc.p(0.5,0.5+1)}></Box>
+					<Box drawBox={true} name={'r2'} width={'10%'} height={'10%'} right={'12%'} top={'50%'} anchorPoint={cc.p(0.5+1,0.5)}></Box>
+					<Box drawBox={true} name={'b2'} width={'10%'} height={'10%'} right={'50%'} bottom={'12%'} anchorPoint={cc.p(0.5,0.5-1)}></Box>
+					<Box drawBox={true} name={'l2'} width={'10%'} height={'10%'} left={'12%'} top={'50%'} anchorPoint={cc.p(0.5-1,0.5)}></Box>
 				</Box>
 			</Lay>
 
 			<Lay name={'width and height are independent'} assert={'{"Cat": {"width":400, "height":250}}'}>
+				<Box name={'Dog'} drawBox={true} width={500} height={500}>
+					<Box drawBox={true} name={'Cat'} width={'auto'} height={'50%'}>
+						<Box drawBox={true} name={'Humster'} width={400} height={50}></Box>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay bottom={500} name={'width and height are independent'} >
 				<Box name={'Dog'} drawBox={true} width={500} height={500}>
 					<Box drawBox={true} name={'Cat'} width={'auto'} height={'50%'}>
 						<Box drawBox={true} name={'Humster'} width={400} height={50}></Box>

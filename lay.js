@@ -99,7 +99,7 @@ export const Box = Container.extend({
             isVertPosDependent: bottomType === 'dependent' || topType === 'dependent',
             width: props.width === 'auto' ? (props.minWidth ? props.minWidth : 0) : props.width,
             height: props.height === 'auto' ? (props.minHeight ? props.minHeight : 0) : props.height,
-            anchorPoint: props.anchorPoint || cc.p(0.5, 0.5),
+            anchorPoint: props.anchorPoint || cc.p(0, 1),
             origin: {
                 anchorPoint: props.anchorPoint,
                 width: props.width,
@@ -203,7 +203,6 @@ export const Box = Container.extend({
 
     /* update layout */
     layout(parent) {
-
         /*
         сначала считаются собственные координаты (если позиции блока приземлены),
         причём учитывается ориджин родителя. Например, при ориджене у родителя top, 
@@ -215,22 +214,32 @@ export const Box = Container.extend({
         новые размеры этого блока и растянутся (если он авто)
         */
 
+        const bounds = this.getBounds();
+
         /* own static position (offsets) */
+        this.updateStaticPosition();
 
         /* update children static positions */
-        for (let child of this.getChildren()) {
+        /*for (let child of this.getChildren()) {
             child._className === "_Box_" && child.updateStaticPositions(this);
-        }
+        }*/
 
         /* update children */
         for (let child of this.getChildren()) {
-            child._className === "_Box_" && child.layout(this);
+            if (child._className === "_Box_") {
+                child.layout(this);
+                //child.updateAnchorPointAccordingToDock(this._params.hdock, this._params.vdock);
+            }
         }
 
         /* update dependent children */
         for (let child of this.getChildren()) {
-            child._className === "_Box_" && child.signalUpdateDependent(this);
+            if (child._className === "_Box_") {
+                child.signalUpdateDependent(this, bounds);
+                //child.correctionForDock(this._params.hdock, this._params.vdock, bounds.width, bounds.height);
+            }
         }
+
         /* update autosize parent */
         if (isDefined(parent)) {
             parent.signalUpdateSize(this);
@@ -243,14 +252,30 @@ export const Box = Container.extend({
 
     /* возвращает свои размеры и положение. Хорошее место для оптимизаций */
     getBounds() {
-        /*if (this._params.name === 'Giraffe') {
-            cc.log(this.convertToWorldSpaceAR(this.getBoundingBox().position))
-        }*/
-        return this.getBoundingBox();
+        let result = this.getBoundingBox();
+        result.x = result.x || 0;
+        result.y = result.y || 0;
+        result.width = result.width || 0;
+        result.height = result.height || 0;
+        return result;
     },
 
-    updateStaticPositions(parent) {
-        const parentBounds = parent.getBoundingBox();
+    updateStaticPosition() {
+        this.setPositionX(isDefined(this._params.left) ? this._params.left : -this._params.right)
+        this.setPositionY(isDefined(this._params.top) ? -this._params.top : this._params.bottom)
+    },
+
+    updateAnchorPointAccordingToDock(hdock, vdock) {
+        if (!isDefined(this._params.origin.anchorPoint)) {
+            const x = (hdock === 'right') ? 1 : 0; 
+            const y = (hdock === 'bottom') ? 0 : 1; 
+            this._params.anchorPoint = cc.p(x, y);
+            this.setAnchorPoint(this._params.anchorPoint);
+        }
+    },
+
+    /*updateStaticPositions(parent) {
+        const parentBounds = parent.getBounds();
 
         if (!this._params.isHorPosDependent) {
             const dockOffset = parent._params.hdock === 'left' ? 0 : parentBounds.width;
@@ -263,7 +288,7 @@ export const Box = Container.extend({
         }
 
         if (!this._params.isVertPosDependent) {
-            const dockOffset = parent._params.vdock === 'top' ? 0 : parentBounds.height;
+            const dockOffset = parent._params.vdock === 'bottom' ? 0 : parentBounds.height;
             if (isDefined(this._params.bottom)) {
                 this.setPositionY(dockOffset + this._params.bottom);
             }
@@ -272,7 +297,7 @@ export const Box = Container.extend({
             }
         }
 
-        /* даже если анкор поинт где-то установился по пути, но его не было в пропсах */
+        // даже если анкор поинт где-то установился по пути, но его не было в пропсах 
         if (!this._params.isHorPosDependent && !this._params.isVertPosDependent && !isDefined(this._params.origin.anchorPoint)) {
             this._params.anchorPoint = cc.p(
                 (parent._params.hdock === 'right' ? 1 : 0), 
@@ -280,7 +305,7 @@ export const Box = Container.extend({
         }
 
         this.setAnchorPoint(this._params.anchorPoint);
-    },
+    },*/
 
     /* автоматические увеличение, вслед за детьми */
     signalUpdateSize(child) {
@@ -325,11 +350,19 @@ export const Box = Container.extend({
         }
     },
 
-    signalUpdateDependent(parent) {
+    correctionForDock(hdock, vdock, width, height) {
+        if (!this._params.isHorPosDependent && hdock === 'right' && isDefined(width)) {
+            this.setPositionX(this.x + width);
+        }
+        if (!this._params.isVertPosDependent && vdock === 'top' && isDefined(height)) {
+            this.setPositionY(this.y + height);
+        }
+    },
+
+    signalUpdateDependent(parent, bounds) {
         if (!this._params.isWidthDependent && !this._params.isHeightDependent && !this._params.isHorPosDependent && !this._params.isVertPosDependent) {
             return;
         }
-        const bounds = parent.getBounds();
 
         if (this._params.isWidthDependent || this._params.isHorPosDependent) {
             this._signalUpdateDependentAxis(
