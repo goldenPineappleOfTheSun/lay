@@ -97,8 +97,8 @@ export const Box = Container.extend({
             isHeightDependent: heightType === 'dependent',
             isHorPosDependent: leftType === 'dependent' || rightType === 'dependent',
             isVertPosDependent: bottomType === 'dependent' || topType === 'dependent',
-            width: props.width === 'auto' ? (props.minWidth ? props.minWidth : 0) : props.width,
-            height: props.height === 'auto' ? (props.minHeight ? props.minHeight : 0) : props.height,
+            width: props.width === 'auto' ? (props.minWidth ? props.minWidth : 0) : props.width || 0,
+            height: props.height === 'auto' ? (props.minHeight ? props.minHeight : 0) : props.height || 0,
             anchorPoint: props.anchorPoint || cc.p(0, 1),
             origin: {
                 anchorPoint: props.anchorPoint,
@@ -228,7 +228,7 @@ export const Box = Container.extend({
         for (let child of this.getChildren()) {
             if (child._className === "_Box_") {
                 child.layout(this);
-                //child.updateAnchorPointAccordingToDock(this._params.hdock, this._params.vdock);
+                child.updateAnchorPointAccordingToDock(this._params.hdock, this._params.vdock);
             }
         }
 
@@ -236,7 +236,7 @@ export const Box = Container.extend({
         for (let child of this.getChildren()) {
             if (child._className === "_Box_") {
                 child.signalUpdateDependent(this, bounds);
-                //child.correctionForDock(this._params.hdock, this._params.vdock, bounds.width, bounds.height);
+                child.correctionForDock(this._params.hdock, this._params.vdock, bounds.width, bounds.height);
             }
         }
 
@@ -252,23 +252,28 @@ export const Box = Container.extend({
 
     /* возвращает свои размеры и положение. Хорошее место для оптимизаций */
     getBounds() {
-        let result = this.getBoundingBox();
+        return this.getBoundingBox();
+        /*let result = this.getBoundingBox();
         result.x = result.x || 0;
         result.y = result.y || 0;
         result.width = result.width || 0;
         result.height = result.height || 0;
-        return result;
+        return result;*/
     },
 
     updateStaticPosition() {
-        this.setPositionX(isDefined(this._params.left) ? this._params.left : -this._params.right)
-        this.setPositionY(isDefined(this._params.top) ? -this._params.top : this._params.bottom)
+        if (!this._params.isHorPosDependent) {
+            this.setPositionX(isDefined(this._params.left) ? this._params.left : -this._params.right)
+        }
+        if (!this._params.isVertPosDependent) {
+            this.setPositionY(isDefined(this._params.top) ? -this._params.top : this._params.bottom)
+        }
     },
 
     updateAnchorPointAccordingToDock(hdock, vdock) {
         if (!isDefined(this._params.origin.anchorPoint)) {
             const x = (hdock === 'right') ? 1 : 0; 
-            const y = (hdock === 'bottom') ? 0 : 1; 
+            const y = (vdock === 'bottom') ? 0 : 1; 
             this._params.anchorPoint = cc.p(x, y);
             this.setAnchorPoint(this._params.anchorPoint);
         }
@@ -309,38 +314,45 @@ export const Box = Container.extend({
 
     /* автоматические увеличение, вслед за детьми */
     signalUpdateSize(child) {
-        child = child.getBounds();
+        const childBounds = child.getBounds();
 
         if (this._params.autoWidth) {
             // если док слева, значит можно увеличивать ноду вправо, не боясь, что дети уедут
-            if (this._params.hdock === 'left' && child.x + child.width > this.width) {
-                this._set_width(child.x + child.width);
+            if (this._params.hdock === 'left' && childBounds.x + childBounds.width > this.width) {
+                this._set_width(childBounds.x + childBounds.width);
             }
 
             // если док слева, значит нужно увеличивать ноду влево осторожно и с учётом детей
-            if (this._params.hdock === 'right' && child.x < 0) {
-                const delta = this.x - child.x;
+            if (this._params.hdock === 'right' && childBounds.x < 0) {
+                const delta = this.x - childBounds.x;
                 this._set_width(this.width + delta)
-                this._set_left(child.left);
+                this._set_left(childBounds.x);
                 for (let c of this.getChildren()) {
-                    if (!c._params.isHorPosDependent) {
+                    if (c._params.isHorPosDependent) {
+                        continue;
+                    }
+                    if (c === child) {
+                        debugger
+                        c._set_left(0 + child.getAnchorPoint().x * childBounds.width);
+                    } else {
                         c._add_left(delta);
                     }
+
                 }
             }
         }
 
         if (this._params.autoHeight) {
-            // если док слева, значит можно увеличивать ноду вправо, не боясь, что дети уедут
-            if (this._params.vdock === 'top' && child.y + child.height > this.height) {
-                this._set_height(child.y + child.height);
+            // если док снизу, значит можно увеличивать ноду вверх, не боясь, что дети уедут
+            if (this._params.vdock === 'bottom' && childBounds.y + childBounds.height > this.height) {
+                this._set_height(childBounds.y + childBounds.height);
             }
 
             // если док слева, значит нужно увеличивать ноду влево осторожно и с учётом детей
-            if (this._params.vdock === 'top' && child.y < 0) {
-                const delta = this.y - child.y;
+            if (this._params.vdock === 'top' && childBounds.y < 0) {
+                const delta = this.y - childBounds.y;
                 this._set_height(this.height + delta)
-                this._set_bottom(child.bottom);
+                this._set_bottom(childBounds.y);
                 for (let c of this.getChildren()) {
                     if (!c._params.isVertPosDependent) {
                         c._add_bottom(delta);
@@ -404,11 +416,11 @@ export const Box = Container.extend({
     _calc(value, parent, parentBounds, axis) {
         if (typeof(value) === 'string') {
             value = value
-                .replaceAll(/(\d+)%/g, (a, num) => parentPercent(parent, parentBounds, +num, axis))
-                .replaceAll(/(\d+)dw%/g, (a, num) => designPercent(+num, 'width'))
-                .replaceAll(/(\d+)dh%/g, (a, num) => designPercent(+num, 'height'))
-                .replaceAll(/(\d+)sw%/g, (a, num) => screenPercent(+num, 'width'))
-                .replaceAll(/(\d+)sh%/g, (a, num) => screenPercent(+num, 'height'));
+                .replaceAll(/(\d+(\.\d+){0,1})%/g, (a, num) => parentPercent(parent, parentBounds, +num, axis))
+                .replaceAll(/(\d+(\.\d+){0,1})dw%/g, (a, num) => designPercent(+num, 'width'))
+                .replaceAll(/(\d+(\.\d+){0,1})dh%/g, (a, num) => designPercent(+num, 'height'))
+                .replaceAll(/(\d+(\.\d+){0,1})sw%/g, (a, num) => screenPercent(+num, 'width'))
+                .replaceAll(/(\d+(\.\d+){0,1})sh%/g, (a, num) => screenPercent(+num, 'height'));
             return eval(value);
         } else {
             return value;

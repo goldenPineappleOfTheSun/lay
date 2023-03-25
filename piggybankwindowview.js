@@ -42,9 +42,11 @@ export const PiggybankWindowView = Window2View.extend({
 			width={width}
 			height={height}
 		>
-			<Lay bottom={500} name={'flying all sides'} assert={'{"t":{"width":110, "height":110, "left":-10, "bottom":-10}}'}>
-				<Box drawBox={true} name={'Dog'} width={500} height={500}>
-					<Box drawBox={true} name={'t'} width={'20%'} height={'20%'} left={'12%'} bottom={'5%'}></Box>
+
+			<Lay left={200} name={'top right dock stretches only up and right'} assert={'{"Doge":{"left":0, "bottom":0, "width":96, "height":96}}'}>
+				<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={50} minHeight={50} hdock={'right'} vdock={'top'}>
+					<Box name={'a'} drawBox={true} left={-64} bottom={-64} width={60} height={60} anchorPoint={cc.p(0.5,0.5)}></Box>
+					<Box name={'b'} drawBox={true} left={64} bottom={64} width={60} height={60} anchorPoint={cc.p(0.5,0.5)}></Box>
 				</Box>
 			</Lay>
 
@@ -70,20 +72,16 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay name={'flying all sides'} assert={'{"t": {"left":250, "bottom":340}, "t2": {"left":250, "bottom":340}, "r": {"left":440, "bottom":150}, "r2": {"left":440, "bottom":150}, "b": {"left":250, "bottom":-40}, "b2": {"left":250, "bottom":-40}, "l": {"left":60, "bottom":150}, "l2": {"left":60, "bottom":150}}'}>
-				<Box name={'Dog'} drawBox={true} top={-400} width={500} height={500}>
-					<Box drawBox={true} name={'t'} width={'20%'} height={'20%'} left={'50%'} top={'12%'}></Box>
-					<Box drawBox={true} name={'r'} width={'20%'} height={'20%'} right={'12%'} top={'50%'}></Box>
-					<Box drawBox={true} name={'b'} width={'20%'} height={'20%'} right={'50%'} bottom={'12%'}></Box>
-					<Box drawBox={true} name={'l'} width={'20%'} height={'20%'} left={'12%'} top={'50%'}></Box>
-					<Box drawBox={true} name={'t2'} width={'10%'} height={'10%'} left={'50%'} top={'12%'} anchorPoint={cc.p(0.5,0.5+1)}></Box>
-					<Box drawBox={true} name={'r2'} width={'10%'} height={'10%'} right={'12%'} top={'50%'} anchorPoint={cc.p(0.5+1,0.5)}></Box>
-					<Box drawBox={true} name={'b2'} width={'10%'} height={'10%'} right={'50%'} bottom={'12%'} anchorPoint={cc.p(0.5,0.5-1)}></Box>
-					<Box drawBox={true} name={'l2'} width={'10%'} height={'10%'} left={'12%'} top={'50%'} anchorPoint={cc.p(0.5-1,0.5)}></Box>
+			<Lay name={'flying all sides'}>
+				<Box name={'Dog'} drawBox={true} top={-400} width={500} height={500} assert={'{"Sparrow":{"left":250, "bottom":440}, "Raven":{"left":440, "bottom":250}, "Falcon":{"left":250, "bottom":60}, "Eagle":{"left":60, "bottom":250}}'}>
+					<Box drawBox={true} name={'Sparrow'} width={'20%'} height={'20%'} left={'50%'} top={'12%'} anchorPoint={cc.p(0.5, 1)}></Box>
+					<Box drawBox={true} name={'Raven'} width={'20%'} height={'20%'} right={'12%'} top={'50%'} anchorPoint={cc.p(1, 0.5)}></Box>
+					<Box drawBox={true} name={'Falcon'} width={'20%'} height={'20%'} right={'50%'} bottom={'12%'} anchorPoint={cc.p(0.5, 0)}></Box>
+					<Box drawBox={true} name={'Eagle'} width={'20%'} height={'20%'} left={'12%'} top={'50%'} anchorPoint={cc.p(0, 0.5)}></Box>
 				</Box>
 			</Lay>
 
-			<Lay name={'width and height are independent'} assert={'{"Cat": {"width":400, "height":250}}'}>
+			<Lay bottom={500} name={'width and height are independent'} assert={'{"Cat": {"width":400, "height":250}}'}>
 				<Box name={'Dog'} drawBox={true} width={500} height={500}>
 					<Box drawBox={true} name={'Cat'} width={'auto'} height={'50%'}>
 						<Box drawBox={true} name={'Humster'} width={400} height={50}></Box>
@@ -91,15 +89,7 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay bottom={500} name={'width and height are independent'} >
-				<Box name={'Dog'} drawBox={true} width={500} height={500}>
-					<Box drawBox={true} name={'Cat'} width={'auto'} height={'50%'}>
-						<Box drawBox={true} name={'Humster'} width={400} height={50}></Box>
-					</Box>
-				</Box>
-			</Lay>
-
-			<Lay name={'width and height are independent 2'} assert={'{"Cat": {"width":250, "height":400}}'}>
+			<Lay bottom={500} name={'width and height are independent 2'} assert={'{"Cat": {"width":250, "height":400}}'}>
 				<Box name={'Dog'} drawBox={true} width={500} height={500}>
 					<Box drawBox={true} name={'Cat'} width={'50%'} height={'auto'}>
 						<Box drawBox={true} name={'Humster'} width={50} height={400}></Box>
@@ -128,18 +118,18 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay name={'matryoshka of flyings'} assert={'{"Front": {"left":350, "bottom":150}, "Front 2": {"left":190, "bottom":170}, "Front 3": {"left":50, "bottom":190}}'}>
-				<Box drawBox={true} name={'Starship'} width={500} height={500}>
-					<Box drawBox={true} name={'Front'} width={150} height={200} right={'0'} top={'150'}>
-						<Box drawBox={true} name={'Front 2'} width={130} height={160} right={'180'} top={-20}>
-							<Box drawBox={true} name={'Front 3'} width={110} height={120} right={'160'} top={-20}></Box>
+			<Lay bottom={500} name={'matryoshka of flyings'} assert={'{}'}>
+				<Box drawBox={true} name={'a'} width={500} height={500}>
+					<Box drawBox={true} name={'b'} width={400} height={400} right={'50'} top={'50'} anchorPoint={cc.p(1, 1)}>
+						<Box drawBox={true} name={'c'} width={300} height={300} left={'12.5%'} bottom={'12.5%'} anchorPoint={cc.p(0, 0)}>
+							<Box drawBox={true} name={'d'} width={200} height={200} left={'50%'} bottom={'50%'} anchorPoint={cc.p(0.5, 0.5)}></Box>
 						</Box>
 					</Box>
 				</Box>
 			</Lay>
 			
-			<Lay name={'dock left bottom'} assert={'{"a":{"left":0, "bottom":0}, "d":{"left":60, "bottom":60}}'}>
-				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'left'}>
+			<Lay bottom={500} name={'dock left bottom'} assert={'{"a":{"left":0, "bottom":0}, "d":{"left":60, "bottom":60}}'}>
+				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'left'} vdock={'bottom'}>
 					<Box name={'a'} drawBox={true} left={0} bottom={0} width={50} height={50}></Box>
 					<Box name={'b'} drawBox={true} left={0} bottom={60} width={50} height={50}></Box>
 					<Box name={'c'} drawBox={true} left={60} bottom={0} width={50} height={50}></Box>
@@ -147,8 +137,8 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay name={'dock right bottom'} assert={'{"a":{"left":300, "bottom":0}, "d":{"left":240, "bottom":60}}'}>
-				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'right'}>
+			<Lay bottom={500} name={'dock right bottom'} assert={'{"a":{"left":300, "bottom":0}, "d":{"left":240, "bottom":60}}'}>
+				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'right'} vdock={'bottom'}>
 					<Box name={'a'} drawBox={true} right={0} bottom={0} width={50} height={50} anchorPoint={cc.p(1, 0)}></Box>
 					<Box name={'b'} drawBox={true} right={0} bottom={60} width={50} height={50} anchorPoint={cc.p(1, 0)}></Box>
 					<Box name={'c'} drawBox={true} right={60} bottom={0} width={50} height={50} anchorPoint={cc.p(1, 0)}></Box>
@@ -156,8 +146,8 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 			
-			<Lay name={'dock top left'} assert={'{"a":{"left":0, "bottom":300}, "d":{"left":60, "bottom":240}}'}>
-				<Box name={'Doge'} drawBox={true} width={300} height={300} vdock={'top'}>
+			<Lay bottom={500} name={'dock top left'} assert={'{"a":{"left":0, "bottom":300}, "d":{"left":60, "bottom":240}}'}>
+				<Box name={'Doge'} drawBox={true} width={300} height={300}>
 					<Box name={'a'} drawBox={true} left={0} top={0} width={50} height={50} anchorPoint={cc.p(0, 1)}></Box>
 					<Box name={'b'} drawBox={true} left={0} top={60} width={50} height={50} anchorPoint={cc.p(0, 1)}></Box>
 					<Box name={'c'} drawBox={true} left={60} top={0} width={50} height={50} anchorPoint={cc.p(0, 1)}></Box>
@@ -165,7 +155,7 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 			
-			<Lay name={'dock top right'} assert={'{"a":{"left":300, "bottom":300}, "d":{"left":240, "bottom":240}}'}>
+			<Lay bottom={200} name={'dock top right'} assert={'{"a":{"left":300, "bottom":0}, "d":{"left":240, "bottom":-60}}'}>
 				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'right'} vdock={'top'}>
 					<Box name={'a'} drawBox={true} right={0} top={0} width={50} height={50}></Box>
 					<Box name={'b'} drawBox={true} right={0} top={60} width={50} height={50}></Box>
@@ -174,26 +164,10 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 			</Lay>
 
-			<Lay name={'if no anchor point specified parent will set it depending on owns dock'} assert={'{"measure":{"left":0, "bottom":250}}'}>
-				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'left'} vdock={'top'}>
-					<Box name={'docked'} width={50} height={50}>
-						<Box name={'measure'} drawBox={true} width={50} height={25}></Box>
-					</Box>
-				</Box>
-			</Lay>
-
-			<Lay name={'if no anchor point specified parent will set it depending on owns dock'} assert={'{"measure":{"left":250, "bottom":0}}'}>
-				<Box name={'Doge'} drawBox={true} width={300} height={300} hdock={'right'} vdock={'bottom'}>
-					<Box name={'docked'} width={50} height={50}>
-						<Box name={'measure'} drawBox={true} width={50} height={25}></Box>
-					</Box>
-				</Box>
-			</Lay>
-
-			<Lay name={'bottom left dock stretches only up and right'} assert={'{"Doge":{"left":100, "bottom":0, "width":157, "height":157}}'}>
-				<Box name={'Doge'} drawBox={true} left={100} width={'auto'} height={'auto'} minWidth={50} minHeight={50} >
-					<Box name={'a'} drawBox={true} left={-57} bottom={-57} width={100} height={100}></Box>
-					<Box name={'b'} drawBox={true} left={57} bottom={57} width={100} height={100}></Box>
+			<Lay left={200} name={'bottom left dock stretches only up and right'} assert={'{"Doge":{"left":0, "bottom":0, "width":96, "height":96}}'}>
+				<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={50} minHeight={50} vdock={'bottom'}>
+					<Box name={'a'} drawBox={true} left={-66} bottom={-66} width={60} height={60} anchorPoint={cc.p(0.5,0.5)}></Box>
+					<Box name={'b'} drawBox={true} left={66} bottom={66} width={60} height={60} anchorPoint={cc.p(0.5,0.5)}></Box>
 				</Box>
 			</Lay>
 
@@ -214,6 +188,19 @@ export const PiggybankWindowView = Window2View.extend({
 					<Box drawBox={true} name={'Auto'} height={'auto'} width={'auto'} left={'50%'} bottom={'50%'} anchorPoint={cc.p(0.5, 0.5)}>
 						<Box drawBox={true} name={'Bike'} width={111} height={112}></Box>
 					</Box>
+				</Box>
+			</Lay>
+
+			/* если блок иееет ширину в процентах и док=сверху, то блок внутри норм расчитывает свою позицию
+			например так: ц вложен в б, б вложен в а, икс тоже вложен в а
+			a-авторазмер. икс высокий блок, который тянет а. б - процент от высоты а. ц - статика, которая по идее должна просто вверху чилить и не сломаться */
+			
+			<Lay bottom={500} name={'can we trust flying blocks'}>
+				<Box drawBox={true} name={'Bus'} width={500} height={'auto'}>
+					<Box drawBox={true} name={'Auto'} height={250} width={300}>
+						<Box drawBox={true} name={'Skate'} height={50} width={50} top={10}></Box>
+					</Box>
+					<Box drawBox={true} name={'Bike'} width={400} height={500}></Box>
 				</Box>
 			</Lay>
 
