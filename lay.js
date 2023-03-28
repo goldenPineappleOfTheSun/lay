@@ -123,6 +123,9 @@ export const Box = Container.extend({
             }
         }
 
+        /* update own autosize */
+        this.updateAutosize();
+
         /* update dependent children */
         for (let child of this.getChildren()) {
             if (child._className === "_Box_") {
@@ -131,9 +134,9 @@ export const Box = Container.extend({
         }
 
         /* update autosize parent */
-        if (isDefined(parent)) {
+        /*if (isDefined(parent)) {
             parent.signalUpdateSize(this);
-        }
+        }*/
 
         if (this._params.assert) {
             this._assert(this._params.assert);
@@ -155,14 +158,59 @@ export const Box = Container.extend({
     },
 
     /* автоматические увеличение, вслед за детьми */
-    signalUpdateSize(child) {
+    updateAutosize() {
+        if (!this._params.autoWidth && !this._params.autoHeight) {
+            return;
+        }     
+
+        let left = 0;
+        let right = this.width;
+        let bottom = 0;
+        let top = this.height;
+        const anchor = this.getAnchorPoint();
+
+        for (let c of this.getChildren()) {
+            const bounds = c.getBounds();
+            left = Math.min(left, bounds.x);
+            right = Math.max(right, bounds.x + bounds.width);
+            bottom = Math.min(bottom, bounds.y);
+            top = Math.max(top, bounds.y + bounds.height);
+        }
+
+        if (this._params.autoWidth) {
+            const newWidth = right - left;
+            this._add_left(left - this.width * anchor.x + newWidth * anchor.x);
+            this._set_width(newWidth);
+
+            for (let c of this.getChildren()) {
+                if (!c._params.isHorPosDependent) {
+                    c._add_left(-left);
+                }
+            }
+        }
+
+        if (this._params.autoHeight) {
+            const newHeight = top - bottom;
+            this._add_bottom(bottom - this.height * anchor.y + newHeight * anchor.y);
+            this._set_height(newHeight);
+
+            for (let c of this.getChildren()) {
+                if (!c._params.isVertPosDependent) {
+                    c._add_bottom(-bottom);
+                }
+            }
+        }
+    },
+
+    /* автоматические увеличение, вслед за детьми */
+    /*signalUpdateSize(child) {
         if (this._params.autoWidth) {
             this._signalUpdateSize(child, 'isWidthDependent', 'isHorPosDependent', 'x', 'width', '_set_left', '_add_left', '_set_width')
         }
         if (this._params.autoHeight) {
             this._signalUpdateSize(child, 'isHeightDependent', 'isVertPosDependent', 'y', 'height', '_set_bottom', '_add_bottom', '_set_height')
         }
-    },
+    },*/
 
     signalUpdateDependent(parent) {
         const bounds = this.getBounds();
@@ -189,116 +237,33 @@ export const Box = Container.extend({
                 this._set_bottom, this._set_top, this._set_height)
         }
     },
-
+/*
     _signalUpdateSize(child, isSizeDependent, isPosDependent, axisPos, axisSize, axisPosSetter, axisPosAdder, axisSizeSetter) {
-        //const getLeft = (block, bounds) => bounds[axisPos];
-        //const getRight = (block, bounds) => bounds[axisPos] + bounds[axisSize];
+        const childBounds = child.getBounds();
 
-        const apLeftCorrection = (block) => -block[axisSize] * block.getAnchorPoint()[axisPos]
-        const apRightCorrection = (block) => block[axisSize] * (1 -block.getAnchorPoint()[axisPos])
-
-        //const bounds = this.getBounds();
-        //const childBounds = child.getBounds();
         const selfAnchor = this.getAnchorPoint()[axisPos];
-        const childLeft = child[axisPos] + apLeftCorrection(child);
-        const childRight = child[axisPos] + apRightCorrection(child);
-        const selfLeft = 0; //0 + apLeftCorrection(this);
-        const selfRight = this[axisSize]; //0 + apRightCorrection(this);
+        const childLeft = childBounds[axisPos];
+        const childRight = childBounds[axisPos] + childBounds[axisSize];
+        const selfLeft = 0
+        const selfRight = this[axisSize];
         const left = Math.min(childLeft, selfLeft);
         const right = Math.max(childRight, selfRight);
-
         const newSize = right - left;
         const newPos = left + newSize * selfAnchor;
 
         this[axisPosAdder](newPos - (this[axisSize] * selfAnchor));
         this[axisSizeSetter](newSize);
 
-        //const newSelfLeft = apLeftCorrection(this) + newPos;
-        //const delta = newSelfLeft + this[axisSize] * selfAnchor;
-
-        //debugger
-
         for (let c of this.getChildren()) {
             if (c._params[isPosDependent]) {
                 continue;
             }
-            c[axisPosAdder](-left);
-            /*if (c === child) {
-                c[axisPosSetter](child.getAnchorPoint()[axisPos] * childBounds[axisSize]);
-            } else {
-                c[axisPosAdder](-newPos);
-            }*/
-        }
-
-        /*if (childLeft < selfLeft) {
-            const delta = selfLeft - childLeft;
-            this[axisSizeSetter](selfRight - childLeft);
-            this[axisPosSetter](childLeft + (selfRight - childLeft) * this.getAnchorPoint()[axisPos])
-        }
-
-        if (childRight > selfRight) {
-            const delta = childRight - selfRight;
-            this[axisSizeSetter](childRight - selfLeft);
-            this[axisPosSetter](selfLeft + (selfRight - childLeft) * (1 - this.getAnchorPoint()[axisPos]))
-        }*/
-
-        /*if (right - left < bounds[axisSize]) {
-            return
-        }
-
-        debugger
-
-        const oldSize = selfRight - selfLeft;
-        const newSize = right - left;
-        //const delta = 0 + (newSize - oldSize) * this.getAnchorPoint()[axisPos];
-        //this[axisPosSetter](this[axisPos] + delta);
-        this[axisSizeSetter](newSize);
-
-        if ()*/
-
-        /*for (let c of this.getChildren()) {
-            if (c._params[isPosDependent]) {
-                continue;
+            if (left !== 0) {
+                // moving
+                c[axisPosAdder](-left);
             }
-            if (c === child) {
-                c[axisPosSetter](0 + child.getAnchorPoint()[axisPos] * childBounds[axisSize]);
-            } else {
-                c[axisPosAdder](-delta);
-            }
-        }*/
-
-        /*const left = (bounds) => bounds[axisPos]
-        const right = (bounds) => bounds[axisPos] + bounds[axisSize]
-        const new Left = */
-
-        /*if (right(childBounds) > right(bounds)) {
-            this[axisSizeSetter](right(childBounds) - left(bounds));
-        }*/
-
-        /*// если ребёнок вышел за правую границу, то всё изи
-        if (right(childBounds) > right(bounds)) {
-            debugger
-            this[axisSizeSetter](right(childBounds) - left(bounds));
         }
-
-        // если ребёнок вышел за левую границу, значит нужно увеличивать ноду влево осторожно и с учётом детей
-        if (left(childBounds) < left(bounds)) {
-            const delta = left(bounds) - left(childBounds);
-            const newSize = right(bounds) - left(childBounds);
-            this[axisSizeSetter](newSize)
-            this[axisPosSetter](left(childBounds) + bounds[axisSize] * this.getAnchorPoint()[axisPos]);
-            for (let c of this.getChildren()) {
-                if (c._params[isPosDependent]) {
-                    continue;
-                }
-                if (c === child) {
-                    c[axisPosSetter](0 + child.getAnchorPoint()[axisPos] * childBounds[axisSize]);
-                } else {
-                    c[axisPosAdder](delta);
-                }
-            }
-        }*/
-    },
+    },*/
 
     _signalUpdateDependentAxis(parent, bounds, isSizeDependent, isPosDependent, axisDirect, axisNegative, axisSize, axisDirectSetter, axisNegativeSetter, axisSizeSetter) {
         const size = this._params.origin[axisSize]
