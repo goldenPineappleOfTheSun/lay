@@ -192,7 +192,7 @@ export const Box = Container.extend({
     },*/
 
     signalUpdateDependent(parent) {
-        const bounds = this.getBounds();
+        const parentBounds = parent.getBounds();
 
         if (!this._params.isWidthDependent && !this._params.isHeightDependent && !this._params.isHorPosDependent && !this._params.isVertPosDependent) {
             return;
@@ -200,7 +200,7 @@ export const Box = Container.extend({
 
         if (this._params.isWidthDependent || this._params.isHorPosDependent) {
             this._signalUpdateDependentAxis(
-                parent, bounds, 
+                parent, parentBounds, 
                 this._params.isWidthDependent, 
                 this._params.isHorPosDependent, 
                 'left', 'right', 'width', 
@@ -209,7 +209,7 @@ export const Box = Container.extend({
 
         if (this._params.isHeightDependent || this._params.isVertPosDependent) {
             this._signalUpdateDependentAxis(
-                parent, bounds, 
+                parent, parentBounds, 
                 this._params.isHeightDependent, 
                 this._params.isVertPosDependent, 
                 'bottom', 'top', 'height', 
@@ -263,7 +263,7 @@ export const Box = Container.extend({
     },
 
     _set_left(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setPositionX(value);
@@ -271,7 +271,7 @@ export const Box = Container.extend({
     },
 
     _set_right(value, parentBounds) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         const bounds = this.getBounds();
@@ -283,7 +283,7 @@ export const Box = Container.extend({
     },
 
     _set_width(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setWidth(value);
@@ -291,7 +291,7 @@ export const Box = Container.extend({
     },
 
     _set_bottom(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setPositionY(value);
@@ -299,7 +299,7 @@ export const Box = Container.extend({
     },
 
     _set_top(value, parentBounds) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         const bounds = this.getBounds();
@@ -311,7 +311,7 @@ export const Box = Container.extend({
     },
 
     _set_height(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setHeight(value);
@@ -320,7 +320,7 @@ export const Box = Container.extend({
     },
 
     _add_left(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setPositionX(this.x + value);
@@ -328,7 +328,7 @@ export const Box = Container.extend({
     },
 
     _add_width(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setWidth(this.width + value);
@@ -336,7 +336,7 @@ export const Box = Container.extend({
     },
 
     _add_bottom(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setPositionY(this.y + value);
@@ -344,7 +344,7 @@ export const Box = Container.extend({
     },
 
     _add_height(value) {
-        if (!value) {
+        if (!isDefined(value)) {
             return
         }
         this.setHeight(this.height + value);

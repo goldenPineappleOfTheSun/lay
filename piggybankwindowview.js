@@ -43,6 +43,13 @@ export const PiggybankWindowView = Window2View.extend({
 			height={height}
 		>
 
+			<Lay name={'matryoshka of dependents'} assert={'{"Doge":{"width":100, "height":100}}'}>
+				<Box top={150} left={100} name={'Doge'} width={100} height={100} drawBox={true}>
+					<Box name={'a'} drawBox={true} width={100} height={100} bottom={'110%'} anchorPoint={cc.p(0, 0)}>
+					</Box>
+				</Box>
+			</Lay>
+
 		</Container>
 	},
 
@@ -64,7 +71,6 @@ export const PiggybankWindowView = Window2View.extend({
 				<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={200} minHeight={200}>
 				</Box>
 			</Lay>
-
 			
 			<Container name={'auto block stretches vertically'}>
 
@@ -301,6 +307,59 @@ export const PiggybankWindowView = Window2View.extend({
 				<Box name={'Doge'} drawBox={true} padding={50} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)}>
 					<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
 					<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'dependent block'}>
+				<Box name={'Doge'} drawBox={true} width={500} height={500} assert={'{"Eagle":{"left":50, "bottom":449}, "Sparrow":{"left":448, "bottom":53}}'}>
+					<Box name={'Eagle'} drawBox={true} width={100} height={100} left={'50'} top={'51'} anchorPoint={cc.p(0, 1)}></Box>
+					<Box name={'Sparrow'} drawBox={true} width={50} height={50} right={'52'} bottom={'53'} anchorPoint={cc.p(1, 0)}></Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'dependent position zero must work correctly'}>
+				<Box top={150} drawBox={true}  width={100} height={100} left={100} name={'Doge'} drawBox={true} assert={'{"corner":{"left":0, "bottom":100}}'}>
+					<Box name={'corner'} drawBox={true} width={50} height={50} left={'0'} top={"0%"} anchorPoint={cc.p(0, 1)}>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'matryoshka of statics'}>
+				<Box top={150} left={100} name={'Doge'} drawBox={true} assert={'{"a":{"left":0, "bottom":0}, "b":{"left":0, "bottom":10}, "c":{"left":110, "bottom":10}, "d":{"left":110, "bottom":-100}}'}>
+					<Box name={'a'} drawBox={true} width={100} height={100}>
+						<Box name={'b'} drawBox={true} width={100} height={100} bottom={110} anchorPoint={cc.p(0, 0)}>
+							<Box name={'c'} drawBox={true} width={100} height={100} left={110} anchorPoint={cc.p(0, 0)}>
+								<Box name={'d'} drawBox={true} width={100} height={100} top={110} anchorPoint={cc.p(0, 0)}>
+								</Box>
+							</Box>
+						</Box>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'matryoshka of autos'} assert={'{"Doge":{"width":100, "height":100}}'}>
+				<Box top={150} left={100} name={'Doge'} width={'auto'} height={'auto'} drawBox={true}>
+					<Box name={'a'} drawBox={true} width={'auto'} height={'auto'} >
+						<Box name={'b'} drawBox={true} width={'auto'} height={'auto'} >
+							<Box name={'c'} drawBox={true} width={'auto'} height={'auto'} >
+								<Box name={'d'} drawBox={true} width={100} height={100} >
+								</Box>
+							</Box>
+						</Box>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'matryoshka of dependents'} assert={'{"Doge":{"width":100, "height":100}}'}>
+				<Box top={150} left={100} name={'Doge'} width={100} height={100} drawBox={true}>
+					<Box name={'a'} drawBox={true} width={100} height={100} top={'-10'}>
+						<Box name={'b'} drawBox={true} width={100} height={100} right={'-10'}>
+							<Box name={'c'} drawBox={true} width={100} height={100} bottom={'-10'}>
+								<Box name={'d'} drawBox={true} width={100} height={100} left={'-10'}>
+								</Box>
+							</Box>
+						</Box>
+					</Box>
 				</Box>
 			</Lay>
 
