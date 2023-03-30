@@ -43,7 +43,6 @@ export const PiggybankWindowView = Window2View.extend({
 			height={height}
 		>
 
-
 		</Container>
 	},
 
@@ -297,6 +296,14 @@ export const PiggybankWindowView = Window2View.extend({
 				</Lay>
 
 			</Container>
+
+			<Lay name={'auto block with padding'} left={300} top={200} assert={'{"Doge":{"left":-13, "bottom":-13, "width":425, "height":150}, "Mouse":{"left":-163}}'}>
+				<Box name={'Doge'} drawBox={true} padding={50} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)}>
+					<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+				</Box>
+			</Lay>
+
 
 		</Container>
 	},

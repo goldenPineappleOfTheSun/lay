@@ -80,6 +80,7 @@ export const Box = Container.extend({
             width: props.width === 'auto' ? (props.minWidth ? props.minWidth : 0) : props.width || 0,
             height: props.height === 'auto' ? (props.minHeight ? props.minHeight : 0) : props.height || 0,
             anchorPoint: props.anchorPoint || cc.p(0, 1),
+            padding: props.padding || 0,
             origin: {
                 anchorPoint: props.anchorPoint,
                 width: props.width,
@@ -144,14 +145,15 @@ export const Box = Container.extend({
         let right = this.width;
         let bottom = 0;
         let top = this.height;
+        const padding = this._params.padding;
         const anchor = this.getAnchorPoint();
 
         for (let c of this.getChildren()) {
             const bounds = c.getBounds();
-            left = Math.min(left, bounds.x);
-            right = Math.max(right, bounds.x + bounds.width);
-            bottom = Math.min(bottom, bounds.y);
-            top = Math.max(top, bounds.y + bounds.height);
+            left = Math.min(left, bounds.x - padding);
+            right = Math.max(right, bounds.x + bounds.width + padding);
+            bottom = Math.min(bottom, bounds.y - padding);
+            top = Math.max(top, bounds.y + bounds.height + padding);
         }
 
         if (this._params.autoWidth) {
