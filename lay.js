@@ -61,14 +61,6 @@ export const Box = Container.extend({
             cc.error('Нельзя top + bottom!');
             props.top = undefined;
         }
-        if (isDefined(props.hdock) && props.hdock !== 'left' && props.hdock !== 'right') {
-            cc.error('возможные значения для hdock: "left" или "right"');
-            props.hdock = null;
-        }
-        if (isDefined(props.vdock) && props.vdock !== 'bottom' && props.vdock !== 'top') {
-            cc.error('возможные значения для vdock: "bottom" или "top"');
-            props.vdock = null;
-        }
 
         if (!isDefined(props.left) && !isDefined(props.right)) {
             props.left = 0;
@@ -102,17 +94,7 @@ export const Box = Container.extend({
 
     /* update layout */
     layout(parent) {
-        /*
-        сначала считаются собственные координаты (если позиции блока приземлены),
-        причём учитывается ориджин родителя. Например, при ориджене у родителя top, 
-        текущий блок должен поднятся вверх на высоту родителя
-        затем вызываем лейаут у детей, чтобы они узнали свои размеры
-        на этом же шаге дети вызывают signalUpdateSize у этого блока (если он авто)
-        далее обновляем летающих (зависимы от текущего блока) детей
-        и в конце концов вызываем signalUpdateSize, чтобы он мог оценить
-        новые размеры этого блока и растянутся (если он авто)
-        */
-
+        
         /* own static position (offsets) */
         this.updateStaticPosition();
 
@@ -132,11 +114,6 @@ export const Box = Container.extend({
                 child.signalUpdateDependent(this);
             }
         }
-
-        /* update autosize parent */
-        /*if (isDefined(parent)) {
-            parent.signalUpdateSize(this);
-        }*/
 
         if (this._params.assert) {
             this._assert(this._params.assert);

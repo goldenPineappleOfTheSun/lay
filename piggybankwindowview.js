@@ -43,6 +43,7 @@ export const PiggybankWindowView = Window2View.extend({
 			height={height}
 		>
 
+
 		</Container>
 	},
 
@@ -217,6 +218,81 @@ export const PiggybankWindowView = Window2View.extend({
 					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
 						<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
 						<Box name={'Mouse1'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+			</Container>
+
+			<Container name={'auto block stretches and accounts for scale'}>
+
+				<Lay left={200} top={-300} assert={'{"Doge":{"left":0, "bottom":0, "width":25, "height":25}}'}>
+					<Box name={'Doge'} drawBox={true} width={25} height={25} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={-200} assert={'{"Doge":{"left":-13, "bottom":-13, "width":325, "height":50}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={-100} assert={'{"Doge":{"left":-11, "bottom":-7, "width":308, "height":37}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} scale={0.5} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} scale={0.2} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={0} assert={'{"Doge":{"left":-16, "bottom":-13, "width":343, "height":100}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)}>
+						<Box name={'Cat'} scale={1.5} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} scale={2} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+			</Container>
+
+			<Container name={'auto block stretches and accounts for scale'}>
+
+				<Lay left={200} top={-300} assert={'{"Doge":{"left":0, "bottom":0, "width":25, "height":25}}'}>
+					<Box name={'Doge'} drawBox={true} width={25} height={25} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={-200} assert={'{"Doge":{"left":-13, "bottom":-13, "width":325, "height":50}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={-100} assert={'{"Doge":{"left":-11, "bottom":-7, "width":308, "height":37}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)} >
+						<Box name={'Cat'} scale={0.5} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} scale={0.2} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+				<Lay left={200} top={0} assert={'{"Doge":{"left":-16, "bottom":-13, "width":343, "height":100}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)}>
+						<Box name={'Cat'} scale={1.5} drawBox={true} width={25} height={50} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} scale={2} drawBox={true} width={25} height={50} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+					</Box>
+				</Lay>
+
+			</Container>
+			
+			<Container name={'auto block. experiments with a rotations'}>
+
+				<Lay left={200} top={-200} assert={'{"Doge":{"left":6, "bottom":-13, "width":363, "height":100}}'}>
+					<Box name={'Doge'} drawBox={true} width={'auto'} height={'auto'} minWidth={25} minHeight={25} anchorPoint={cc.p(0.5, 0.5)}>
+						<Box name={'Cat'} rotation={70} drawBox={true} width={25} height={100} left={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
+						<Box name={'Mouse'} drawBox={true} width={25} height={100} right={150} anchorPoint={cc.p(0.5, 0.5)}></Box>
 					</Box>
 				</Lay>
 
