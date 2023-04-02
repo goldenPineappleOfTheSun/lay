@@ -69,7 +69,7 @@ export const Box = Container.extend({
             props.top = 0;
         }
 
-        this._super(_.extend(props, {
+        props = _.extend(props, {
             layout: props.layout === LayLayout ? LayLayout : NoLayout,
             autoWidth: widthType === 'auto',
             autoHeight: heightType === 'auto',
@@ -81,7 +81,8 @@ export const Box = Container.extend({
             height: props.height === 'auto' ? (props.minHeight ? props.minHeight : 0) : props.height || 0,
             anchorPoint: props.anchorPoint || cc.p(0, 1),
             padding: props.padding || 0,
-            origin: {
+            origin: props.origin || cc.p(0, 1),
+            original: {
                 anchorPoint: props.anchorPoint,
                 width: props.width,
                 height: props.height,
@@ -90,18 +91,33 @@ export const Box = Container.extend({
                 top: props.top,
                 bottom: props.bottom
             }
-        }), children);
+        });
+
+        switch (this._className) {
+            case '_Box_':
+                const offsetContainer = new OriginOffsetContainer(props, children);
+                this._super(props, [offsetContainer]);
+                break;
+            case '_Lay_':
+                this._super(props, children);
+                break;
+            case '_OriginOffsetContainer_':
+                this._super(props, children);
+                break;
+            default: 
+                this._super(props, children);
+                break;
+        }
     },
 
     /* update layout */
     layout(parent) {
-        
         /* own static position (offsets) */
         this.updateStaticPosition();
 
         /* update children */
         for (let child of this.getChildren()) {
-            if (child._className === "_Box_") {
+            if (child._className === "_Box_" || child._className === '_OriginOffsetContainer_') {
                 child.layout(this);
             }
         }
@@ -111,7 +127,7 @@ export const Box = Container.extend({
 
         /* update dependent children */
         for (let child of this.getChildren()) {
-            if (child._className === "_Box_") {
+            if (child._className === "_Box_" || child._className === '_OriginOffsetContainer_') {
                 child.signalUpdateDependent(this);
             }
         }
@@ -124,6 +140,23 @@ export const Box = Container.extend({
     /* возвращает свои размеры и положение. Хорошее место для оптимизаций */
     getBounds() {
         return this.getBoundingBox();
+    },
+
+    /* функция, обратная origin point. Указывает на свой bounding box с учётом origin point */
+    getDimensions() {
+        return {x:0, y:0, width:this.width, height:this.height};
+    },
+
+    fetchChildren() {
+        let result = this.getChildren();
+        result = result.reduce((a, c) => {
+            if (c._className === '_OriginOffsetContainer_') {
+                return a.concat(c.fetchChildren());
+            } else {
+                return a.concat([c])
+            }
+        }, []);
+        return result;
     },
 
     updateStaticPosition() {
@@ -141,14 +174,16 @@ export const Box = Container.extend({
             return;
         }     
 
-        let left = 0;
-        let right = this.width;
-        let bottom = 0;
-        let top = this.height;
+        const origin = this._params.origin;
         const padding = this._params.padding;
-        const anchor = this.getAnchorPoint();
+        let left = -origin.x * this.width - padding;
+        let right = (1 - origin.x) * this.width + padding;
+        let bottom = -origin.y * this.height - padding;
+        let top = (1 - origin.y) * this.height + padding;
+        const oldAnchor = this.getAnchorPointCoords(left, right, bottom, top);
+        const oldOrigin = this.getOriginPointCoords(left, right, bottom, top);
 
-        for (let c of this.getChildren()) {
+        for (let c of this.fetchChildren()) {
             const bounds = c.getBounds();
             left = Math.min(left, bounds.x - padding);
             right = Math.max(right, bounds.x + bounds.width + padding);
@@ -156,43 +191,44 @@ export const Box = Container.extend({
             top = Math.max(top, bounds.y + bounds.height + padding);
         }
 
+        const newAnchor = this.getAnchorPointCoords(left, right, bottom, top);
+        const newOrigin = this.getOriginPointCoords(left, right, bottom, top);
+
         if (this._params.autoWidth) {
             const newWidth = right - left;
-            this._add_left(left - this.width * anchor.x + newWidth * anchor.x);
+            this._add_left(newAnchor.x - oldAnchor.x);
             this._set_width(newWidth);
 
             for (let c of this.getChildren()) {
-                if (!c._params.isHorPosDependent) {
-                    c._add_left(-left);
-                }
+                c.signalOffsetParentResizedWidth(oldOrigin, newOrigin);
             }
         }
 
         if (this._params.autoHeight) {
             const newHeight = top - bottom;
-            this._add_bottom(bottom - this.height * anchor.y + newHeight * anchor.y);
+            this._add_bottom(newAnchor.y - oldAnchor.y);
             this._set_height(newHeight);
 
             for (let c of this.getChildren()) {
-                if (!c._params.isVertPosDependent) {
-                    c._add_bottom(-bottom);
-                }
+                c.signalOffsetParentResizedHeight(oldOrigin, newOrigin);
             }
         }
     },
 
-    /* автоматические увеличение, вслед за детьми */
-    /*signalUpdateSize(child) {
-        if (this._params.autoWidth) {
-            this._signalUpdateSize(child, 'isWidthDependent', 'isHorPosDependent', 'x', 'width', '_set_left', '_add_left', '_set_width')
+    signalOffsetParentResizedWidth(oldOrigin, newOrigin) {
+        if (!this._params.isHorPosDependent) {
+            this._add_left(oldOrigin.x - newOrigin.x);
         }
-        if (this._params.autoHeight) {
-            this._signalUpdateSize(child, 'isHeightDependent', 'isVertPosDependent', 'y', 'height', '_set_bottom', '_add_bottom', '_set_height')
+    },
+
+    signalOffsetParentResizedHeight(oldOrigin, newOrigin) {
+        if (!this._params.isVertPosDependent) {
+            this._add_bottom(oldOrigin.y - newOrigin.y);
         }
-    },*/
+    },
 
     signalUpdateDependent(parent) {
-        const parentBounds = parent.getBounds();
+        const parentDimensions = parent.getDimensions();            
 
         if (!this._params.isWidthDependent && !this._params.isHeightDependent && !this._params.isHorPosDependent && !this._params.isVertPosDependent) {
             return;
@@ -200,7 +236,7 @@ export const Box = Container.extend({
 
         if (this._params.isWidthDependent || this._params.isHorPosDependent) {
             this._signalUpdateDependentAxis(
-                parent, parentBounds, 
+                parent, parentDimensions, 
                 this._params.isWidthDependent, 
                 this._params.isHorPosDependent, 
                 'left', 'right', 'width', 
@@ -209,76 +245,81 @@ export const Box = Container.extend({
 
         if (this._params.isHeightDependent || this._params.isVertPosDependent) {
             this._signalUpdateDependentAxis(
-                parent, parentBounds, 
+                parent, parentDimensions, 
                 this._params.isHeightDependent, 
                 this._params.isVertPosDependent, 
                 'bottom', 'top', 'height', 
                 this._set_bottom, this._set_top, this._set_height)
         }
     },
-/*
-    _signalUpdateSize(child, isSizeDependent, isPosDependent, axisPos, axisSize, axisPosSetter, axisPosAdder, axisSizeSetter) {
-        const childBounds = child.getBounds();
 
-        const selfAnchor = this.getAnchorPoint()[axisPos];
-        const childLeft = childBounds[axisPos];
-        const childRight = childBounds[axisPos] + childBounds[axisSize];
-        const selfLeft = 0
-        const selfRight = this[axisSize];
-        const left = Math.min(childLeft, selfLeft);
-        const right = Math.max(childRight, selfRight);
-        const newSize = right - left;
-        const newPos = left + newSize * selfAnchor;
-
-        this[axisPosAdder](newPos - (this[axisSize] * selfAnchor));
-        this[axisSizeSetter](newSize);
-
-        for (let c of this.getChildren()) {
-            if (c._params[isPosDependent]) {
-                continue;
-            }
-            if (left !== 0) {
-                // moving
-                c[axisPosAdder](-left);
-            }
+    getAnchorPointCoords(left, right, bottom, top) {
+        if (!isDefined(left) || !isDefined(right) || !isDefined(bottom) || !isDefined(top)) {
+            const bounds = this.getDimensions();
+            left = bounds.x
+            right = bounds.x + bounds.width
+            bottom = bounds.y
+            top = bounds.y + bounds.height
         }
-    },*/
+        const width = right - left
+        const height = top - bottom
+        const anchor = this.getAnchorPoint();
+        return cc.p(left + width * anchor.x, bottom + height * anchor.y)
+    },
 
-    _signalUpdateDependentAxis(parent, bounds, isSizeDependent, isPosDependent, axisDirect, axisNegative, axisSize, axisDirectSetter, axisNegativeSetter, axisSizeSetter) {
-        const size = this._params.origin[axisSize]
-        const direct = this._params.origin[axisDirect]
-        const opposite = this._params.origin[axisNegative]
+    getOriginPointCoords(left, right, bottom, top) {
+        if (!isDefined(left) || !isDefined(right) || !isDefined(bottom) || !isDefined(top)) {
+            const bounds = this.getDimensions();
+            left = bounds.x
+            right = bounds.x + bounds.width
+            bottom = bounds.y
+            top = bounds.y + bounds.height
+        }
+        const width = right - left
+        const height = top - bottom
+        const origin = this._params.origin;
+        return cc.p(left + width * origin.x, bottom + height * origin.y)
+    },
+
+    _signalUpdateDependentAxis(parent, parentDimensions, isSizeDependent, isPosDependent, axisDirect, axisNegative, axisSize, axisDirectSetter, axisNegativeSetter, axisSizeSetter) {
+        const size = this._params.original[axisSize]
+        const direct = this._params.original[axisDirect]
+        const opposite = this._params.original[axisNegative]
 
         if (isSizeDependent && isDefined(size)) {
-            axisSizeSetter.call(this, this._calc(size, parent, bounds, axisSize), bounds);
+            axisSizeSetter.call(this, this._calc(size, parent, parentDimensions, axisSize), parentDimensions);
         }
         
         if (isPosDependent && isDefined(direct)) {
-            axisDirectSetter.call(this, this._calc(direct, parent, bounds, axisSize), bounds);
+            axisDirectSetter.call(this, this._calc(direct, parent, parentDimensions, axisSize), parentDimensions);
         }
         
         if (isPosDependent && isDefined(opposite)) {
-            axisNegativeSetter.call(this, this._calc(opposite, parent, bounds, axisSize), bounds);
+            axisNegativeSetter.call(this, this._calc(opposite, parent, parentDimensions, axisSize), parentDimensions);
         }
     },
 
-    _set_left(value) {
+    _set_left(value, parentDimensions) {
         if (!isDefined(value)) {
             return
         }
-        this.setPositionX(value);
         this._params.left = value;
+        if (this._params.isHorPosDependent) {
+            this.setPositionX(parentDimensions.x + value);
+        } else {
+            this.setPositionX(value);
+        }
     },
 
-    _set_right(value, parentBounds) {
+    _set_right(value, parentDimensions) {
         if (!isDefined(value)) {
             return
         }
         const bounds = this.getBounds();
         if (this._params.isHorPosDependent) {
-            this._set_left(parentBounds.width - value);
+            this._set_left(parentDimensions.width - value, parentDimensions);
         } else {
-            this._set_left(-value);
+            this._set_left(-value, parentDimensions);
         }
     },
 
@@ -290,23 +331,27 @@ export const Box = Container.extend({
         this._params.width = value;
     },
 
-    _set_bottom(value) {
+    _set_bottom(value, parentDimensions) {
         if (!isDefined(value)) {
             return
         }
-        this.setPositionY(value);
         this._params.bottom = value;
+        if (this._params.isVertPosDependent) {
+            this.setPositionY(parentDimensions.y + value);
+        } else {
+            this.setPositionY(value);
+        }
     },
 
-    _set_top(value, parentBounds) {
+    _set_top(value, parentDimensions) {
         if (!isDefined(value)) {
             return
         }
         const bounds = this.getBounds();
         if (this._params.isVertPosDependent) {
-            this._set_bottom(parentBounds.height - value);
+            this._set_bottom(parentDimensions.height - value, parentDimensions);
         } else {
-            this._set_bottom(-value);
+            this._set_bottom(-value, parentDimensions);
         }
     },
 
@@ -315,7 +360,6 @@ export const Box = Container.extend({
             return
         }
         this.setHeight(value);
-        cc.log(`----${value}`)
         this._params.height = value;
     },
 
@@ -406,6 +450,71 @@ export const Box = Container.extend({
     }
 });
 
+export const OriginOffsetContainer = Box.extend({
+    _className: "_OriginOffsetContainer_",
+
+    ctor(props, children) {
+
+        this._super({
+            col: props.col,
+            anchorPoint: cc.p(0.5, 0.5),
+            name: `${props.name || ''}_offset_container`,
+            width: 0,
+            height: 0,
+            padding: 0,
+            left: `${props.padding} + (100% - ${props.padding} * 2) * ${props.origin.x}`,
+            right: undefined,
+            bottom: `${props.padding} + (100% - ${props.padding} * 2) * ${props.origin.y}`,
+            top: undefined,
+            origin: undefined,
+            autoWidth: false,
+            isWidthDependent: true,
+            isHeightDependent: true,
+            isHorPosDependent: true,
+            isVertPosDependent: true,
+            drawBox: false
+        }, children);
+    },
+
+    /* overriden */
+    getDimensions() {
+        /* hm??? */
+        const parent = this._parent._parent;
+
+        let result = parent.getBounds();
+        result.x = result.x || 0;
+        result.y = result.y || 0;
+        result.x = -parent._params.origin.x * result.width;
+        result.y = -parent._params.origin.y * result.height;
+        return result;
+    },
+
+    /* overriden */
+    signalOffsetParentResizedWidth(oldOrigin, newOrigin) {
+        for (let c of this.getChildren()) {
+            c.signalOffsetParentResizedWidth(oldOrigin, newOrigin);
+        }
+    },
+
+    /* overriden */
+    signalOffsetParentResizedHeight(oldOrigin, newOrigin) {
+        for (let c of this.getChildren()) {
+            c.signalOffsetParentResizedHeight(oldOrigin, newOrigin);
+        }
+    },
+});
+
+export const Lay = Box.extend({
+    _className: "_Lay_",
+
+    ctor(props, children) {
+        this._super(_.extend(props, {
+            layout: LayLayout,
+        }), children);
+    },
+
+})
+
 function isDefined(value) {
     return value !== null && value !== undefined;
 }
@@ -437,13 +546,3 @@ function designPercent(value, axis) {
 function screenPercent(value, axis) {
     return cc.visibleRect[axis] * value * 0.01;
 }
-export const Lay = Box.extend({
-    _className: "_Lay_",
-
-    ctor(props, children) {
-        this._super(_.extend(props, {
-            layout: LayLayout,
-        }), children);
-    },
-
-})
