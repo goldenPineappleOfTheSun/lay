@@ -43,6 +43,14 @@ export const PiggybankWindowView = Window2View.extend({
 			height={height}
 		>
 
+
+			<Lay name={'origin center doesnt mess up dependent child position'} assert={'{"Cat":{"width":250, "height":250, "left":125, "bottom":-125}}'}>
+				<Box name={'Doge'} width={500} height={500} drawBox={true} origin={cc.p(0.5, 0.5)}>
+					<Box name={"Cat"} width={'50%'} height={'50%'} left={'25%'} top={'25%'} anchorPoint={cc.p(0, 1)} drawBox={true}></Box>
+				</Box>
+			</Lay>
+
+
 		</Container>
 	},
 
@@ -318,12 +326,35 @@ export const PiggybankWindowView = Window2View.extend({
 			</Lay>
 
 			<Lay name={'matryoshka of statics'}>
-				<Box top={150} left={100} name={'Doge'} drawBox={true} assert={'{"a":{"left":0, "bottom":0}, "b":{"left":0, "bottom":10}, "c":{"left":110, "bottom":10}, "d":{"left":110, "bottom":-100}}'}>
+				<Box top={250} left={100} name={'Doge'} drawBox={true} assert={'{"a":{"left":0, "bottom":0}, "b":{"left":0, "bottom":10}, "c":{"left":110, "bottom":110}, "d":{"left":110, "bottom":0}}'}>
 					<Box name={'a'} drawBox={true} width={100} height={100}>
-						<Box name={'b'} drawBox={true} width={100} height={100} bottom={110} anchorPoint={cc.p(0, 0)}>
-							<Box name={'c'} drawBox={true} width={100} height={100} left={110} anchorPoint={cc.p(0, 0)}>
-								<Box name={'d'} drawBox={true} width={100} height={100} top={110} anchorPoint={cc.p(0, 0)}>
-								</Box>
+						<Box name={'b'} drawBox={true} width={100} height={100} bottom={10} anchorPoint={cc.p(0, 0)}>
+							<Box name={'c'} drawBox={true} width={100} height={100} left={110} anchorPoint={cc.p(0, 1)}>
+								<Box name={'d'} drawBox={true} width={100} height={100} top={110} anchorPoint={cc.p(0, 1)}></Box>
+							</Box>
+						</Box>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'matryoshka of statics opposite origins'}>
+				<Box top={250} left={100} name={'Doge'} drawBox={true} assert={'{"a":{"left":0, "bottom":0}, "b":{"left":0, "bottom":10}, "c":{"left":110, "bottom":110}, "d":{"left":110, "bottom":0}}'}>
+					<Box name={'a'} drawBox={true} width={100} height={100}>
+						<Box name={'b'} drawBox={true} width={100} height={100} bottom={10} anchorPoint={cc.p(0, 0)}>
+							<Box name={'c'} drawBox={true} width={100} height={100} left={110} anchorPoint={cc.p(0, 1)}>
+								<Box name={'d'} drawBox={true} width={100} height={100} top={110} anchorPoint={cc.p(0, 1)}></Box>
+							</Box>
+						</Box>
+					</Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'matryoshka of statics opposite origins'}>
+				<Box origin={cc.p(1, 0)} top={250} left={100} name={'Doge'} drawBox={true} assert={'{"a":{"left":0, "bottom":0}, "b":{"left":0, "bottom":-110}, "c":{"left":110, "bottom":-110}, "d":{"left":110, "bottom":0}}'}>
+					<Box name={'a'} origin={cc.p(1, 0)} drawBox={true} width={100} height={100}>
+						<Box name={'b'} origin={cc.p(1, 0)} top={10} left={-100} drawBox={true} width={100} height={100}>
+							<Box name={'c'} origin={cc.p(1, 0)} bottom={100} left={10} drawBox={true} width={100} height={100}>
+								<Box name={'d'} origin={cc.p(1, 0)} bottom={210} left={-100} drawBox={true} width={100} height={100}></Box>
 							</Box>
 						</Box>
 					</Box>
@@ -334,17 +365,6 @@ export const PiggybankWindowView = Window2View.extend({
 				<Box top={150} left={100} name={'Doge'} width={'auto'} height={'auto'} padding={20} drawBox={true}>
 					<Box name={'a'} width={'auto'} height={'auto'} padding={20} drawBox={true}>
 						<Box name={'d'} drawBox={true} width={100} height={100}>
-						</Box>
-					</Box>
-				</Box>
-			</Lay>
-
-			<Lay name={'matryoshka of dependents'} assert={'{"a":{"left":100, "bottom":-140}, "b":{"left":210, "bottom":-40}, "c":{"left":210, "bottom":-150}}'}>
-				<Box top={150} left={100} name={'Doge'} width={100} height={100} drawBox={true}>
-					<Box name={'a'} drawBox={true} width={100} height={100} top={'-10'} anchorPoint={cc.p(0, 0)}>
-						<Box name={'b'} drawBox={true} width={100} height={100} right={'-10'}>
-							<Box name={'c'} drawBox={true} width={100} height={100} bottom={'-10'}>
-							</Box>
 						</Box>
 					</Box>
 				</Box>
