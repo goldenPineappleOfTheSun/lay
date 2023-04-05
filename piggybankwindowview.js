@@ -44,13 +44,6 @@ export const PiggybankWindowView = Window2View.extend({
 		>
 
 
-			<Lay name={'origin center doesnt mess up dependent child position'} assert={'{"Cat":{"width":250, "height":250, "left":125, "bottom":-125}}'}>
-				<Box name={'Doge'} width={500} height={500} drawBox={true} origin={cc.p(0.5, 0.5)}>
-					<Box name={"Cat"} width={'50%'} height={'50%'} left={'25%'} top={'25%'} anchorPoint={cc.p(0, 1)} drawBox={true}></Box>
-				</Box>
-			</Lay>
-
-
 		</Container>
 	},
 
@@ -396,6 +389,29 @@ export const PiggybankWindowView = Window2View.extend({
 			<Lay name={'origin center doesnt mess up dependent child position'} assert={'{"Cat":{"width":250, "height":250, "left":125, "bottom":-125}}'}>
 				<Box name={'Doge'} width={500} height={500} drawBox={true} origin={cc.p(0.5, 0.5)}>
 					<Box name={"Cat"} width={'50%'} height={'50%'} left={'25%'} top={'25%'} anchorPoint={cc.p(0, 1)} drawBox={true}></Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'calc %'} assert={'{"Cat":{"width":250, "height":250, "left":125, "bottom":-125}}'}>
+				<Box name={'Doge'} width={500} height={500} drawBox={true} origin={cc.p(0.5, 0.5)}>
+					<Box name={"Cat"} width={'25% + 25%'} height={'100% / 2'} left={'25%'} top={'25%'} anchorPoint={cc.p(0, 1)} drawBox={true}></Box>
+				</Box>
+			</Lay>
+
+			<Lay name={'calc design resolution'}>
+				<Box name={'Doge'} width={'50d%'} height={'50d%'} drawBox={true} origin={cc.p(0.5, 0.5)}>
+				</Box>
+			</Lay>
+
+			<Lay name={'calc screen resolution'}>
+				<Box name={'Doge'} width={'50s%'} height={'50s%'} drawBox={true} origin={cc.p(0.5, 0.5)}>
+				</Box>
+			</Lay>
+
+			<Lay name={'ratio'}>
+				<Box name={'Doge'} width={100} height={'width * 2'} drawBox={true} origin={cc.p(0.5, 0.5)}>
+				</Box>
+				<Box name={'Doge'} width={'height * 3'} height={100} drawBox={true} origin={cc.p(0.5, 0.5)}>
 				</Box>
 			</Lay>
 

@@ -68,6 +68,22 @@ export const Box = Container.extend({
         if (!isDefined(props.bottom) && !isDefined(props.top)) {
             props.top = 0;
         }
+        if (widthType === 'dependent') {
+            if (heightType === 'dependent' && props.width.indexOf('width') > -1 && props.width.indexOf('height') > -1) {
+                cc.error('Нельзя ratio на width и height одновременно!');
+                props.height = 100;
+            }
+            if (props.width.indexOf('width') > -1) {
+                cc.error('Нельзя ratio width использовать в самом width!');
+                props.width = 100;
+            }
+        }
+        if (heightType === 'dependent') {
+            if (props.height.indexOf('height') > -1) {
+                cc.error('Нельзя ratio height использовать в самом height!');
+                props.height = 100;
+            }
+        }
 
         props = _.extend(props, {
             layout: props.layout === LayLayout ? LayLayout : NoLayout,
@@ -400,10 +416,10 @@ export const Box = Container.extend({
         if (typeof(value) === 'string') {
             value = value
                 .replaceAll(/(\d+(\.\d+){0,1})%/g, (a, num) => parentPercent(parent, parentBounds, +num, axis))
-                .replaceAll(/(\d+(\.\d+){0,1})dw%/g, (a, num) => designPercent(+num, 'width'))
-                .replaceAll(/(\d+(\.\d+){0,1})dh%/g, (a, num) => designPercent(+num, 'height'))
-                .replaceAll(/(\d+(\.\d+){0,1})sw%/g, (a, num) => screenPercent(+num, 'width'))
-                .replaceAll(/(\d+(\.\d+){0,1})sh%/g, (a, num) => screenPercent(+num, 'height'));
+                .replaceAll(/(\d+(\.\d+){0,1})d%/g, (a, num) => designPercent(+num, axis))
+                .replaceAll(/(\d+(\.\d+){0,1})s%/g, (a, num) => screenPercent(+num, axis))
+                .replaceAll(/width/g, (a, num) => this.width)
+                .replaceAll(/height/g, (a, num) => this.height)
             return eval(value);
         } else {
             return value;
