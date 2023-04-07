@@ -16,6 +16,8 @@ import {RectColor} from "../../../ui/RectColor";
 
 import {Container} from '../../../ui/Component'
 import {Lay, Box} from '../../../lay'
+import {VBox} from '../../../VBox'
+import {HBox} from '../../../HBox'
 
 export const PiggybankWindowView = Window2View.extend({
 	resources: _.defaults({
@@ -42,7 +44,6 @@ export const PiggybankWindowView = Window2View.extend({
 			width={width}
 			height={height}
 		>
-
 
 		</Container>
 	},
@@ -413,6 +414,41 @@ export const PiggybankWindowView = Window2View.extend({
 				</Box>
 				<Box name={'Doge'} width={'height * 3'} height={100} drawBox={true} origin={cc.p(0.5, 0.5)}>
 				</Box>
+			</Lay>
+
+			<Lay name={"VBox"}>
+				<VBox name={"a"} assert={'{"b": {"left": 0, "bottom": 0}, "c": {"left": 0, "bottom": -100}}'}>
+					<Box name={"b"} drawBox={true} width={100} height={100}></Box>
+					<Box name={"c"} drawBox={true} width={100} height={100}></Box>
+				</VBox>
+			</Lay>
+
+			<Lay name={"VBox indent"}>
+				<VBox name={"a"} indent={50} assert={'{"b": {"left": 0, "bottom": 0}, "c": {"left": 0, "bottom": -150}}'}>
+					<Box name={"b"} drawBox={true} width={100} height={100}></Box>
+					<Box name={"c"} drawBox={true} width={100} height={100}></Box>
+				</VBox>
+			</Lay>
+
+			<Lay left={50} top={50} name={"VBox indent"} assert={'{"a": {"width": 130, "height": 280}, "b": {"left": 15, "bottom": -15}, "c": {"left": 15, "bottom": -165}}'}>
+				<VBox drawBox={true} name={"a"} indent={50} padding={15}>
+					<Box name={"b"} drawBox={true} width={100} height={100}></Box>
+					<Box name={"c"} drawBox={true} width={100} height={100}></Box>
+				</VBox>
+			</Lay>
+
+			<Lay name={"HBox"}>
+				<HBox name={"a"} assert={'{"b": {"left": 0, "bottom": 100}, "c": {"left": 100, "bottom": 100}}'}>
+					<Box name={"b"} drawBox={true} width={100} height={100}></Box>
+					<Box name={"c"} drawBox={true} width={100} height={100}></Box>
+				</HBox>
+			</Lay>
+			
+			<Lay left={50} top={50} name={"HBox indent"} assert={'{"a": {"width": 280, "height": 130}, "b": {"left": 15, "bottom": -15}, "c": {"left": 165, "bottom": -15}}'}>
+				<HBox drawBox={true} name={"a"} indent={50} padding={15}>
+					<Box name={"b"} drawBox={true} width={100} height={100}></Box>
+					<Box name={"c"} drawBox={true} width={100} height={100}></Box>
+				</HBox>
 			</Lay>
 
 

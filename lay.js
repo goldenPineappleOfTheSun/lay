@@ -111,8 +111,8 @@ export const Box = Container.extend({
 
         switch (this._className) {
             case '_Box_':
-                const offsetContainer = new OriginOffsetContainer(props, children);
-                this._super(props, [offsetContainer]);
+                const offsetContainer1 = new OriginOffsetContainer(props, children);
+                this._super(props, [offsetContainer1]);
                 break;
             case '_Lay_':
                 this._super(props, children);
@@ -121,7 +121,8 @@ export const Box = Container.extend({
                 this._super(props, children);
                 break;
             default: 
-                this._super(props, children);
+                const offsetContainer2 = new OriginOffsetContainer(props, children);
+                this._super(props, [offsetContainer2]);
                 break;
         }
     },
@@ -131,26 +132,50 @@ export const Box = Container.extend({
         /* own static position (offsets) */
         this.updateStaticPosition();
 
+        this._afterStaticPosition();
+
         /* update children */
         for (let child of this.getChildren()) {
-            if (child._className === "_Box_" || child._className === '_OriginOffsetContainer_') {
+            if (child._className === "_Box_" || child instanceof Box) {
                 child.layout(this);
             }
         }
 
+        this._afterChildrenLayout();
+
         /* update own autosize */
         this.updateAutosize();
 
+        this._afterAutosize();
+
         /* update dependent children */
         for (let child of this.getChildren()) {
-            if (child._className === "_Box_" || child._className === '_OriginOffsetContainer_') {
+            if (child._className === "_Box_" || child instanceof Box) {
                 child.signalUpdateDependent(this);
             }
         }
 
+        this._afterDependents();
+
         if (this._params.assert) {
             this._assert(this._params.assert);
         }
+    },
+
+    _afterStaticPosition() {
+        // event to override
+    },
+
+    _afterChildrenLayout() {
+        // event to override
+    },
+
+    _afterAutosize() {
+        // event to override
+    },
+
+    _afterDependents() {
+        // event to override
     },
 
     /* возвращает свои размеры и положение. Хорошее место для оптимизаций */
